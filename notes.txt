@@ -1,1 +1,21 @@
 CI/CD Pipeline Concepts
+
+
+===============================>
+
+Settup the jenkins env in docker conatiner 
+build the docker file 
+"sudo docker build -t myjenkins-blueocean:2.504.2-1 ."
+create an network 
+"docker network create jenkins"
+run the conatiner 
+"docker run --name jenkins-blueocean --restart=on-failure --detach \
+  --network jenkins --env DOCKER_HOST=tcp://docker:2376 \
+  --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 \
+  --publish 8080:8080 --publish 50000:50000 \
+  --volume jenkins-data:/var/jenkins_home \
+  --volume jenkins-docker-certs:/certs/client:ro \
+  myjenkins-blueocean:2.504.2-1"
+
+  open localhost:8080 wait till it gets setup and then provide the adminal key '
+  " sudo docker exec -it ea89bd6fdd95 cat /var/jenkins_home/secrets/initialAdminPassword"
