@@ -19,3 +19,13 @@ run the conatiner
 
   open localhost:8080 wait till it gets setup and then provide the adminal key '
   " sudo docker exec -it ea89bd6fdd95 cat /var/jenkins_home/secrets/initialAdminPassword"
+
+
+
+  Admin 
+  Saiyajin 
+  cdac@
+  
+
+Setup Agent 
+
