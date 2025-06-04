@@ -28,4 +28,7 @@ run the conatiner
   
 
 Setup Agent 
-
+generater the ssh key on master 
+copy pub in agent/worker place and try ssh via master 
+create a agent via dashboard and try connecting them provide the connection ssh and ad the priv key there 
+url https://abhiraj2001.medium.com/setting-up-a-jenkins-agent-on-azure-virtual-machine-25b3c0be8eb9
