@@ -24,7 +24,9 @@ run the conatiner
 
   Admin 
   Saiyajin 
-  cdac@
+  cdac@123
+
+  User credentails
   
 
 Setup Agent 
