@@ -34,3 +34,16 @@ generater the ssh key on master
 copy pub in agent/worker place and try ssh via master 
 create a agent via dashboard and try connecting them provide the connection ssh and ad the priv key there 
 url https://abhiraj2001.medium.com/setting-up-a-jenkins-agent-on-azure-virtual-machine-25b3c0be8eb9
+
+
+
+mytoken - APITOKEN 
+1171bdf5b1172bfedf218b5f024c2a42ca
+
+
+trigger a particular pipeline job from outside 
+
+first configure ur job trigger api set a token 
+
+Example: http://admin:552dab89b070c0fcc3fad281c51318ad@10.40.1.14:8080/job/job1/build?token=mytoken
+this will be triggering a job from outside 

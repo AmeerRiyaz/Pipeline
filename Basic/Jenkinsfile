@@ -1,0 +1,127 @@
+
+// Basic Jenkins Pipeline Example
+// This Jenkinsfile defines a simple pipeline with three stages: Build, Test, and Release.
+// each running on the same agent. This is a common pattern for straightforward CI/CD workflows.
+// The pipeline is defined using the declarative syntax, which is more structured and easier to read.
+1
+pipeline {
+    agent any
+    stages {
+        stage("Build") {
+            steps {
+                echo "Build stage."
+            }
+        }
+        stage("Test") {
+            steps {
+                echo "Test stage."
+            }
+        }
+        stage("Release") {
+            steps {
+                echo "Release stage."
+            }
+        }
+    }
+}
+
+
+// This setup is useful when:
+
+// You want different stages to run on different nodes or environments
+
+// You want to minimize resource usage (agent is only spun up when needed)
+2
+pipeline {
+    agent none
+    stages {
+        stage("Build") {
+            agent any
+            steps {
+                echo "Build stage."
+            }
+        }
+    }
+}
+
+3
+// Global Agent Declaration
+// This Jenkinsfile defines a pipeline with a global agent declaration. Physical vm 
+pipeline {
+    agent {
+        label "Agent1"
+    }
+    stages {
+        stage("Build") {
+            steps {
+                echo "Build stage."
+            }
+        }
+    }
+}
+
+
+4
+// This Jenkinsfile defines a pipeline that runs a single stage inside a Docker container.
+pipeline {
+    agent {
+        docker "alpine"
+    }
+    stages {
+        stage("Build") {
+            steps {
+                sh "hostname"
+            }
+        }
+    }
+}
+
+// Recap: Different Forms of agent
+// Type	Description
+// agent any	Use any available agent (usually master or a free one)
+// agent { label 'X' }	Run on a specific node labeled X
+// agent { docker { ... }}	Run in a Docker container on the default agent
+// agent { docker { label 'X' image 'Y' }}	Run Docker container on node X using image Y
+
+5
+// This Jenkinsfile defines a pipeline that runs a single stage inside a Docker container takes the dockerfile from root of the project workspace
+pipeline {
+    agent {
+        dockerfile true
+    }
+    stages {
+        stage("Build") {
+            steps {
+                sh "hostname"
+            }
+        }
+    }
+}
+
+
+6 
+pipeline {
+    agent {
+        dockerfile {
+            filename 'myfolder/Dockerfile'   // Path to your Dockerfile
+            dir 'myfolder'                   // Build context directory
+            label 'Agent1'                   // Optional: to specify which agent to run on
+        }
+    }
+    stages {
+        stage("Build") {
+            steps {
+                sh "hostname"
+            }
+        }
+    }
+}
+Dockerfile
+// FROM node:18-alpine
+// WORKDIR /app
+// COPY . .
+// CMD ["node"]
+
+// This Jenkinsfile defines a pipeline that runs a single stage inside a Docker container
+// using a Dockerfile located in a specific directory. It specifies the Dockerfile path and the build context directory.
+// make sure the Dockerfile is present in the specified directory. In the  workspace directory 
