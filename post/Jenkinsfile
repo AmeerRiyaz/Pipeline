@@ -1,0 +1,225 @@
+pipeline {
+    agent any
+    stages {
+        stage("Build") {
+            steps {
+                echo "Build stage."
+            }
+            post {
+                always {
+                    echo "This block always runs after this stage."
+                }
+            }
+        }
+        stage("Test") {
+            steps {
+                echo "Test stage."
+            }
+            post {
+                unstable {
+                    echo "This block runs when the status of this stage is marked unstable."
+                }
+            }
+        }
+        stage("Release") {
+            steps {
+                echo "Release stage."
+            }
+            post {
+                success {
+                    echo "This block runs when the stage succeeded."
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo "This block always runs."
+        }
+        changed {
+            echo "This block runs when the current status is different than the previous one."
+        }
+        fixed {
+            echo "This block runs when the current status is success and the previous one was failed or unstable."
+        }
+        regression {
+            echo "This block runs when the current status is anything except success but the previous one was successful."
+        }
+        unstable {
+            echo "This block runs if the current status is marked unstable."
+        }
+        aborted {
+            echo "This block runs when the build process is aborted."
+        }
+        failure {
+            echo "This block runs when the build is failed."
+        }
+        success {
+            echo "This block runs when the build is succeeded."
+        }
+        unsuccessful {
+            echo "This block runs when the current status is anything except success."
+        }
+        cleanup {
+            echo "This block always runs after other conditions are evaluated."
+        }
+    }
+}
+
+
+
+
+
+## 🔧 Pipeline Breakdown
+
+### 🔹 Top-Level Block
+
+```groovy
+pipeline {
+    agent any
+```
+
+* Runs on any available Jenkins agent.
+
+---
+
+## 🚧 Stages and Their `post` Blocks
+
+### 🧱 Stage: `Build`
+
+```groovy
+stage("Build") {
+    steps {
+        echo "Build stage."
+    }
+    post {
+        always {
+            echo "This block always runs after this stage."
+        }
+    }
+}
+```
+
+* ✅ Runs `echo` inside the `Build` stage.
+* 🧹 `post { always {} }`: Runs regardless of success/failure — useful for cleanup or logging.
+
+---
+
+### 🧪 Stage: `Test`
+
+```groovy
+stage("Test") {
+    steps {
+        echo "Test stage."
+    }
+    post {
+        unstable {
+            echo "This block runs when the status of this stage is marked unstable."
+        }
+    }
+}
+```
+
+* 🟡 `unstable` is usually triggered when:
+
+  * JUnit test failures occur.
+  * You manually call `currentBuild.result = 'UNSTABLE'`.
+
+> ⚠️ In your example, nothing makes it unstable yet — so this block may **not** trigger unless a test fails or an `unstable()` marker is added.
+
+---
+
+### 🚀 Stage: `Release`
+
+```groovy
+stage("Release") {
+    steps {
+        echo "Release stage."
+    }
+    post {
+        success {
+            echo "This block runs when the stage succeeded."
+        }
+    }
+}
+```
+
+* ✅ Will run the success block **only if** `Release` stage finishes without error.
+
+---
+
+## 🏁 Pipeline-Level `post` Actions
+
+These apply to the **entire pipeline**, regardless of which stage ran.
+
+### ✅ `always`
+
+```groovy
+always {
+    echo "This block always runs."
+}
+```
+
+* 🔁 Executes no matter what.
+
+---
+
+### 🔄 `changed`
+
+```groovy
+changed {
+    echo "This block runs when the current status is different than the previous one."
+}
+```
+
+* Will run **only if build result has changed** from last run (e.g., from `FAILURE` to `SUCCESS`).
+
+---
+
+### 🔧 Other Useful Conditions
+
+| Condition      | Description                                                                                                 |
+| -------------- | ----------------------------------------------------------------------------------------------------------- |
+| `fixed`        | Last build failed or was unstable, **this one succeeded**.                                                  |
+| `regression`   | Last build succeeded, **this one failed or is unstable**.                                                   |
+| `unstable`     | This build is marked `UNSTABLE`.                                                                            |
+| `aborted`      | Build was manually aborted or killed.                                                                       |
+| `failure`      | Build has failed.                                                                                           |
+| `success`      | Build succeeded.                                                                                            |
+| `unsuccessful` | Build is **anything except** `SUCCESS`.                                                                     |
+| `cleanup`      | Final step — **always runs last**, regardless of status. Good for deleting temp files, freeing agents, etc. |
+
+---
+
+## 🧪 Example to Simulate `unstable` and `failure`
+
+You can add these in stages to test different blocks:
+
+```groovy
+steps {
+    script {
+        currentBuild.result = 'UNSTABLE'  // Simulates test stage being unstable
+    }
+}
+```
+
+Or to fail intentionally:
+
+```groovy
+steps {
+    error("Failing this stage intentionally")
+}
+```
+
+---
+
+## ✅ Summary
+
+* You’ve correctly defined all possible `post` blocks.
+* Use `post` at **both stage and pipeline level** to gain full control.
+* Excellent for:
+
+  * Notifications
+  * Conditional cleanup
+  * Handling unstable/failure scenarios
+

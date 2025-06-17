@@ -1,0 +1,87 @@
+pipeline {
+    agent any
+//Defining paramenters for the pipeline
+// This pipeline demonstrates the use of various parameter types in Jenkins
+// including boolean, string, text, password, and choice parameters. which will give the User a chance to input values before the pipeline runs.
+    parameters {
+        booleanParam(
+            name: "TEST_BOOLEAN", 
+            defaultValue: true, 
+            description: "Sample boolean parameter"
+        )
+        string(
+            name: "TEST_STRING", 
+            defaultValue: "ssbostan", 
+            trim: true, 
+            description: "Sample string parameter"
+        )
+        text(
+            name: "TEST_TEXT", 
+            defaultValue: "Jenkins Pipeline Tutorial", 
+            description: "Sample multi-line text parameter"
+        )
+        password(
+            name: "TEST_PASSWORD", 
+            defaultValue: "SECRET", 
+            description: "Sample password parameter"
+        )
+        choice(
+            name: "TEST_CHOICE", 
+            choices: ["production", "staging", "development"], 
+            description: "Sample multi-choice parameter"
+        )
+        dummy(
+            name: "DUmmy_PARAM",
+            defaultValue: "This is a dummy parameter",
+            description: "This is a dummy parameter for testing purposes"
+        )
+    }
+
+    stages {
+        stage("Print Parameters") {
+            steps {
+                script {
+                    echo " Boolean Param: ${params.TEST_BOOLEAN}"
+                    echo " String Param: ${params.TEST_STRING}"
+                    echo " Text Param: ${params.TEST_TEXT}"
+                    echo " Choice Param: ${params.TEST_CHOICE}"
+                    echo " Dummy Param: ${params.DUmmy_PARAM}"
+
+                    // DON'T echo password directly — just test usage
+                    // echo "✅ Password received (length): ${params.TEST_PASSWORD.length()} characters"
+                }
+            }
+        }
+
+        stage("Conditional Behavior") {
+            steps {
+                script {
+                    if (params.TEST_BOOLEAN) {
+                        echo "Boolean is TRUE – running test suite A"
+                    } else {
+                        echo "Boolean is FALSE – running test suite B"
+                    }
+
+                    if (params.TEST_CHOICE == 'production') {
+                        echo "Deploying to PRODUCTION environment"
+                    } else if (params.TEST_CHOICE == 'staging') {
+                        echo "Deploying to STAGING environment"
+                    } else {
+                        echo "Deploying to DEVELOPMENT environment"
+                    }
+                }
+            }
+        }
+
+        stage("Simulate Use of Password (Safe)") {
+            steps {
+                sh '''
+                echo "Simulating use of password"
+                echo "Connecting to server with provided secret (but not printing it)"
+                # Example: curl -u admin:$TEST_PASSWORD https://example.com
+                echo "Success (simulated)"
+                ''' 
+            }
+        }
+    }
+}
